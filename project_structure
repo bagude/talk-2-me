@@ -1,0 +1,23 @@
+pdf_to_audio/
+├── src/
+│   ├── __init__.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── pdf_processor.py
+│   │   ├── llm_service.py
+│   │   └── tts_service.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── processing_service.py
+│   └── ui/
+│       ├── __init__.py
+│       └── app.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_pdf_processor.py
+│   ├── test_llm_service.py
+│   └── test_tts_service.py
+├── logs/
+├── .env.example
+├── .gitignore
+└── pyproject.toml 
