@@ -78,10 +78,12 @@ class GeminiService(LLMService):
     ) -> str:
         """Process text using Gemini."""
         try:
-            prompt = prompt_template.format(text=text, **kwargs)
-            logger.debug(f"Sending prompt to Gemini: {prompt[:100]}...")
+            # Don't try to format the prompt template with the text
+            # Just use the prompt template as is since it's already formatted
+            logger.debug(
+                f"Sending prompt to Gemini: {prompt_template[:100]}...")
 
-            response = self._client.generate_content(prompt)
+            response = self._client.generate_content(prompt_template)
 
             if not response.text:
                 raise LLMError("Empty response from Gemini")
