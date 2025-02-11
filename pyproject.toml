@@ -2,7 +2,7 @@
 name = "pdf-to-audio"
 version = "0.1.0"
 description = "A Streamlit application that converts PDFs to audio using LLM processing and TTS"
-requires-python = ">=3.8,<4.0"
+requires-python = ">=3.9,<4.0"
 dependencies = [
     "streamlit>=1.32.0",
     "PyPDF2>=3.0.0",
