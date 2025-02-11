@@ -2,9 +2,9 @@
 name = "talk-2-me"
 version = "0.1.0"
 description = "A research paper analysis and interaction tool"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["scpseng@gmail.com"]
 readme = "README.md"
-packages = [{include = "talk-2-me", from = "src"}]
+packages = [{include = "talk-2-me"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,!=3.9.7,<4.0"
