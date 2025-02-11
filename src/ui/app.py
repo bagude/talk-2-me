@@ -8,13 +8,13 @@ from loguru import logger
 from pathlib import Path
 import json
 
-# Use absolute imports since Streamlit runs this file directly
-from src.services.pdf_service import PDFService
-from src.services.tts_service import TTSService
-from src.core.exceptions import PDFAudioError
-from src.core.llm.prompt_types import PromptType
-from src.core.llm.prompts import prompts
-from src.core.llm.service import create_llm_service
+# Use relative imports
+from ..services.pdf_service import PDFService
+from ..services.tts_service import TTSService
+from ..core.exceptions import PDFAudioError
+from ..core.llm.prompt_types import PromptType
+from ..core.llm.prompts import prompts
+from ..core.llm.service import create_llm_service
 
 
 def initialize_session_state():
