@@ -41,7 +41,14 @@ logs/*
 *.json
 *.txt
 *.csv
-*.md
+
+#keep readme.md
+!README.md
+
+#keep pyproject.toml
+!pyproject.toml
+
+
 *.pdf
 *.docx
 *.doc
