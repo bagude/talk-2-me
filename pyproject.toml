@@ -1,69 +1,28 @@
-[project]
-name = "pdf-to-audio"
+[tool.poetry]
+name = "talk-2-me"
 version = "0.1.0"
-description = "A Streamlit application that converts PDFs to audio using LLM processing and TTS"
-requires-python = ">=3.9,!=3.9.7,<4.0"
-dependencies = [
-    "streamlit>=1.32.0",
-    "PyPDF2>=3.0.0",
-    "python-dotenv>=1.0.0",
-    "elevenlabs>=0.3.0",
-    "google-generativeai>=0.3.0",
-    "google-cloud-aiplatform>=1.38.0",
-    "pytest>=8.0.0",
-    "pydantic>=2.0.0",
-    "loguru>=0.7.2",
-    "reportlab>=4.1.0,<5.0.0",
-    "PyMuPDF>=1.23.0"
-]
-authors = [
-    {name = "Your Name"}
-]
+description = "A research paper analysis and interaction tool"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.9,!=3.9.7,<4.0"
+streamlit = ">=1.32.0"
+pypdf2 = ">=3.0.0"
+python-dotenv = ">=1.0.0"
+elevenlabs = ">=0.3.0"
+google-generativeai = ">=0.3.0"
+google-cloud-aiplatform = ">=1.38.0"
+pytest = ">=8.0.0"
+pydantic = ">=2.0.0"
+loguru = ">=0.7.2"
+reportlab = ">=4.1.0,<5.0.0"
+pymupdf = ">=1.23.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.pytest.ini_options]
-pythonpath = ["."]
-testpaths = ["tests"]
-addopts = "-v"
-
-[project.optional-dependencies]
-dev = [
-    "black",
-    "isort",
-    "flake8",
-    "pytest",
-    "pytest-cov"
-]
-
-[tool.poetry]
-name = "pdf-to-audio"
-version = "0.1.0"
-description = "A Streamlit application that converts PDFs to audio using LLM processing and TTS"
-authors = ["Your Name"]
-packages = [
-    { include = "src" }
-]
-readme = "README.md"
-
-[tool.poetry.dependencies]
-python = ">=3.9,!=3.9.7,<4.0"
-streamlit = ">=1.32.0"
-PyPDF2 = ">=3.0.0"
-python-dotenv = ">=1.0.0"
-elevenlabs = ">=0.3.0"
-google-generativeai = ">=0.3.0"
-google-cloud-aiplatform = ">=1.38.0"
-pydantic = ">=2.0.0"
-loguru = ">=0.7.2"
-reportlab = ">=4.1.0,<5.0.0"
-PyMuPDF = ">=1.23.0"
-
 [tool.poetry.group.dev.dependencies]
-black = "*"
-isort = "*"
-flake8 = "*"
 pytest = ">=8.0.0"
-pytest-cov = "*"

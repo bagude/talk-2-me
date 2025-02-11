@@ -263,35 +263,27 @@ class PromptLibrary:
 
             PromptType.QUICK_REVIEW: PromptTemplate(
                 template="""
-                Create a 5-minute executive summary of this research paper:
+                You are an expert scientific researcher who has years of experience in conducting systematic literature surveys and meta-analyses of different topics. You pride yourself on incredible accuracy and attention to detail. You always stick to the facts in the sources provided, and never make up new facts.
 
-                1. One-Sentence Overview
-                   - Core research question and main finding
+                Now look at the research paper below, and answer the following questions in 1-2 sentences.
 
-                2. Why It Matters
-                   - Key contribution to the field
-                   - Practical implications
+                When was the paper published?
 
-                3. Essential Methods
-                   - Core methodology in simple terms
-                   - Key analytical approach
+                What is the sample size?
 
-                4. Critical Findings
-                   - Most important results
-                   - Surprising or controversial aspects
+                What is the study methodology? in particular, is it a randomized control trial?
 
-                5. Your Next Steps
-                   - How this connects to your research
-                   - Action items or follow-up needed
+                How was the study funded? in particular, was the funding from commercial funders?
 
-                Keep it concise and focused on decision-making points.
-                Highlight anything that needs immediate attention or follow-up.
+                What was the key question being studied?
 
-                Document to review:
+                What were the key findings to the key question being studied?
+
+                Paper to analyze:
                 {content}
                 """.strip(),
-                description="Quick, actionable summary for busy researchers",
-                parameters={"content": "The paper to review"}
+                description="Provides quick, focused analysis of key aspects of a research paper",
+                parameters={"content": "The paper to analyze"}
             ),
 
             PromptType.LITERATURE_REVIEW: PromptTemplate(
