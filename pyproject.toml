@@ -51,4 +51,4 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,!=3.9.7,<4.0" 
+python = ">=3.9,!=3.9.7,<4.0"
