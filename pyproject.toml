@@ -21,8 +21,8 @@ authors = [
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
@@ -38,9 +38,6 @@ dev = [
     "pytest-cov"
 ]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src"]
-
 [tool.poetry]
 name = "pdf-to-audio"
 version = "0.1.0"
@@ -49,6 +46,24 @@ authors = ["Your Name"]
 packages = [
     { include = "src" }
 ]
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9,!=3.9.7,<4.0"
+streamlit = ">=1.32.0"
+PyPDF2 = ">=3.0.0"
+python-dotenv = ">=1.0.0"
+elevenlabs = ">=0.3.0"
+google-generativeai = ">=0.3.0"
+google-cloud-aiplatform = ">=1.38.0"
+pydantic = ">=2.0.0"
+loguru = ">=0.7.2"
+reportlab = ">=4.1.0,<5.0.0"
+PyMuPDF = ">=1.23.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+isort = "*"
+flake8 = "*"
+pytest = ">=8.0.0"
+pytest-cov = "*"
