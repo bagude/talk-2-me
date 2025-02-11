@@ -22,6 +22,8 @@ class PromptType(Enum):
     FUTURE_RESEARCH = "future_research"
     QUICK_REVIEW = "quick_review"
     BIBLIOGRAPHY = "bibliography"
+    CHAPTER_BREAKDOWN = "chapter_breakdown"
+    STUDY_GUIDE = "study_guide"
 
 
 @dataclass
@@ -47,6 +49,28 @@ class PromptLibrary:
     def __init__(self):
         """Initialize prompt library with research-focused templates."""
         self._templates: Dict[PromptType, PromptTemplate] = {
+            PromptType.TEXT_EXTRACTION: PromptTemplate(
+                template="""
+                Extract and structure the text content from this document.
+                Preserve the logical flow and hierarchy of information.
+                Maintain section headers, lists, and important formatting.
+                Remove any non-essential formatting or artifacts.
+                Ensure the output is clean, readable text suitable for further analysis.
+
+                Focus on:
+                - Main content and arguments
+                - Section structure and flow
+                - Lists and enumerations
+                - Tables and figures (describe their content)
+                - Citations and references
+                
+                Document to process:
+                {content}
+                """.strip(),
+                description="Extracts clean, structured text from documents",
+                parameters={"content": "The document to process"}
+            ),
+
             PromptType.RESEARCH_SUMMARY: PromptTemplate(
                 template="""
                 Create a comprehensive research summary following this structure:
@@ -90,12 +114,115 @@ class PromptLibrary:
                 }
             ),
 
+            PromptType.KEY_FINDINGS: PromptTemplate(
+                template="""
+                Extract and analyze the key findings from this research:
+
+                1. Primary Results
+                   - Main discoveries and insights
+                   - Statistical significance
+                   - Effect sizes and magnitudes
+                   - Unexpected findings
+
+                2. Supporting Evidence
+                   - Data and measurements
+                   - Validation methods
+                   - Replication results
+                   - Control comparisons
+
+                3. Practical Significance
+                   - Real-world implications
+                   - Application potential
+                   - Industry relevance
+                   - Policy impacts
+
+                4. Theoretical Contributions
+                   - New concepts introduced
+                   - Theoretical validations
+                   - Challenges to existing theory
+                   - Framework extensions
+
+                5. Methodological Innovations
+                   - Novel approaches
+                   - Technical advances
+                   - Measurement improvements
+                   - Analysis innovations
+
+                6. Relevance to {research_area}
+                   - Direct applications
+                   - Adaptation potential
+                   - Integration opportunities
+
+                Prioritize findings that are statistically significant, novel, and impactful.
+                
+                Document to analyze:
+                {content}
+                """.strip(),
+                description="Extracts and analyzes key research findings",
+                parameters={
+                    "content": "The paper to analyze",
+                    "research_area": "Your specific research area"
+                }
+            ),
+
+            PromptType.CRITICAL_ANALYSIS: PromptTemplate(
+                template="""
+                Provide a critical analysis of this research:
+
+                1. Theoretical Framework
+                   - Appropriateness of theories used
+                   - Completeness of framework
+                   - Alternative theoretical perspectives
+                   - Integration with existing literature
+
+                2. Methodology Assessment
+                   - Research design strengths/weaknesses
+                   - Sample selection and size
+                   - Control of variables
+                   - Measurement validity and reliability
+
+                3. Analysis Rigor
+                   - Statistical approach appropriateness
+                   - Data handling procedures
+                   - Assumption validation
+                   - Alternative explanations considered
+
+                4. Results Interpretation
+                   - Strength of conclusions
+                   - Causality claims
+                   - Generalizability
+                   - Practical significance
+
+                5. Limitations Analysis
+                   - Design constraints
+                   - Implementation challenges
+                   - Generalizability limits
+                   - Resource constraints
+
+                6. Impact Assessment
+                   - Contribution to {research_area}
+                   - Practical applications
+                   - Policy implications
+                   - Future research value
+
+                Be constructively critical while acknowledging strengths.
+                
+                Document to analyze:
+                {content}
+                """.strip(),
+                description="Provides critical analysis of research strengths and weaknesses",
+                parameters={
+                    "content": "The paper to analyze",
+                    "research_area": "Your specific research area"
+                }
+            ),
+
             PromptType.METHODOLOGY_ANALYSIS: PromptTemplate(
                 template="""
-                Analyze the research methodology with a focus on replication and application:
+                Provide a detailed analysis of the research methodology:
 
                 1. Research Design
-                   - Type of study (experimental, observational, etc.)
+                   - Type of study(experimental, observational, etc.)
                    - Key variables and their operationalization
                    - Control measures and potential confounds
 
@@ -126,7 +253,7 @@ class PromptLibrary:
                    - Resource requirements
 
                 Focus on practical details that would be useful for replication or adaptation.
-                
+
                 Document to analyze:
                 {content}
                 """.strip(),
@@ -159,7 +286,7 @@ class PromptLibrary:
 
                 Keep it concise and focused on decision-making points.
                 Highlight anything that needs immediate attention or follow-up.
-                
+
                 Document to review:
                 {content}
                 """.strip(),
@@ -201,7 +328,7 @@ class PromptLibrary:
                    - Critical discussion points
 
                 Focus on building a mental map of how this fits into your research narrative.
-                
+
                 Document to analyze:
                 {content}
                 """.strip(),
@@ -214,33 +341,189 @@ class PromptLibrary:
 
             PromptType.BIBLIOGRAPHY: PromptTemplate(
                 template="""
-                Extract and analyze the bibliography in JSON format:
+                Extract and analyze the bibliography in strict JSON format:
 
-                1. First, extract all references and format them as a JSON array
-                2. For each reference, include:
-                   - Full citation
-                   - Authors
-                   - Year
-                   - Title
-                   - Journal/Source
-                   - DOI if available
-                   - Type (empirical, theoretical, review, etc.)
-                   - Relevance to {research_area}
-                   - Key themes or topics
-                3. Identify the most cited works
-                4. Highlight seminal papers
-                5. Note any recent (last 2 years) references
+                {
+                    "references": [
+                        {
+                            "citation": "Full citation text",
+                            "authors": ["Author 1", "Author 2"],
+                            "year": 2024,
+                            "title": "Paper title",
+                            "journal": "Journal name",
+                            "doi": "DOI if available",
+                            "type": "empirical|theoretical|review",
+                            "relevance": "Relevance to {research_area}",
+                            "themes": ["theme1", "theme2"],
+                            "is_seminal": true|false,
+                            "citation_count": "if available",
+                            "is_recent": true|false
+                        }
+                    ],
+                    "analysis": {
+                        "most_cited": ["ref1", "ref2"],
+                        "seminal_works": ["ref1", "ref2"],
+                        "recent_papers": ["ref1", "ref2"],
+                        "key_journals": ["journal1", "journal2"],
+                        "main_themes": ["theme1", "theme2"]
+                    }
+                }
 
-                Format the output as valid JSON for easy parsing.
-                
+                Rules:
+                1. Extract ALL references from the document
+                2. Format exactly as shown above
+                3. Ensure valid JSON structure
+                4. Mark papers from last 2 years as recent
+                5. Identify seminal papers based on citation patterns
+                6. Group by research themes
+                7. Note relevance to {research_area}
+
                 Document to analyze:
                 {content}
                 """.strip(),
-                description="Extracts and analyzes bibliography with research context",
+                description="Extracts and analyzes bibliography in structured JSON format",
                 parameters={
                     "content": "The paper to analyze",
                     "research_area": "Your specific research area"
                 }
+            ),
+
+            PromptType.FUTURE_RESEARCH: PromptTemplate(
+                template="""
+                Identify and analyze future research directions based on this paper:
+
+                1. Direct Extensions
+                   - Immediate next steps suggested by authors
+                   - Natural extensions of current findings
+                   - Methodological improvements
+
+                2. Research Gaps
+                   - Unexplored aspects of the topic
+                   - Limitations that need addressing
+                   - Missing variables or contexts
+
+                3. Emerging Opportunities
+                   - New technologies or methods that could be applied
+                   - Interdisciplinary connections
+                   - Potential paradigm shifts
+
+                4. Practical Applications
+                   - Industry or field applications to explore
+                   - Policy implications to investigate
+                   - Implementation studies needed
+
+                5. Your Research Context
+                   - Specific opportunities in {research_area}
+                   - How to build on this work
+                   - Potential collaboration points
+
+                6. Resource Considerations
+                   - Required skills or expertise
+                   - Potential funding sources
+                   - Timeline and scope estimates
+
+                Focus on actionable research directions that align with current trends and needs.
+
+                Document to analyze:
+                {content}
+                """.strip(),
+                description="Identifies future research directions and opportunities",
+                parameters={
+                    "content": "The paper to analyze",
+                    "research_area": "Your specific research area"
+                }
+            ),
+
+            PromptType.CHAPTER_BREAKDOWN: PromptTemplate(
+                template="""
+                Analyze this document and create a logical chapter breakdown:
+
+                1. Document Structure Analysis
+                   - Identify major sections and subsections
+                   - Detect natural topic transitions
+                   - Recognize hierarchical structure
+
+                2. Chapter Identification
+                   - Create logical chapter divisions
+                   - Maintain content coherence
+                   - Preserve academic flow
+
+                3. For each chapter/section:
+                   - Title/heading
+                   - Main topics covered
+                   - Key concepts introduced
+                   - Important figures/tables
+                   - Word count and density
+                   - Logical connections to other chapters
+
+                4. Navigation Markers
+                   - Clear start/end points
+                   - Transition phrases
+                   - Cross-references
+
+                Format the output as a structured JSON:
+                {{
+                    "chapters": [
+                        {{
+                            "title": "Chapter title",
+                            "start_marker": "Text that starts this chapter",
+                            "end_marker": "Text that ends this chapter",
+                            "topics": ["topic1", "topic2"],
+                            "key_concepts": ["concept1", "concept2"],
+                            "word_count": 1234,
+                            "references": ["ref1", "ref2"]
+                        }}
+                    ]
+                }}
+
+                Document to analyze:
+                {content}
+                """.strip(),
+                description="Creates logical chapter breakdown with navigation markers",
+                parameters={"content": "The document to analyze"}
+            ),
+
+            PromptType.STUDY_GUIDE: PromptTemplate(
+                template="""
+                Create a comprehensive study guide for this document:
+
+                1. Learning Objectives
+                   - Core concepts to master
+                   - Key skills to develop
+                   - Understanding checkpoints
+
+                2. Key Concepts
+                   - Define main terms
+                   - Explain core theories
+                   - Illustrate key relationships
+                   - Highlight critical formulas/methods
+
+                3. Summary Points
+                   - Chapter/section summaries
+                   - Main arguments/findings
+                   - Important evidence
+                   - Methodology highlights
+
+                4. Practice Questions
+                   - Conceptual understanding questions
+                   - Application scenarios
+                   - Critical thinking exercises
+                   - Self-assessment prompts
+
+                5. Study Resources
+                   - Related readings
+                   - Additional references
+                   - Online resources
+                   - Practice materials
+
+                Format as a structured guide optimized for learning.
+                Include both theoretical understanding and practical application.
+
+                Document to analyze:
+                {content}
+                """.strip(),
+                description="Generates comprehensive study guide with practice materials",
+                parameters={"content": "The document to analyze"}
             ),
         }
 
@@ -257,14 +540,17 @@ class PromptLibrary:
     def list_templates(self) -> Dict[PromptType, str]:
         """List available templates and their descriptions."""
         return {
+            PromptType.TEXT_EXTRACTION: "Extract clean, structured text from documents",
             PromptType.RESEARCH_SUMMARY: "Comprehensive research summary with key findings",
             PromptType.METHODOLOGY_ANALYSIS: "Detailed analysis of research methodology",
             PromptType.QUICK_REVIEW: "Quick, actionable summary for busy researchers",
             PromptType.LITERATURE_REVIEW: "Analysis of paper's place in research landscape",
-            PromptType.BIBLIOGRAPHY: "Extract and analyze bibliography in JSON format",
+            PromptType.BIBLIOGRAPHY: "Extract and analyze bibliography in structured JSON format",
             PromptType.KEY_FINDINGS: "Extract key findings and contributions",
             PromptType.CRITICAL_ANALYSIS: "Critical analysis of strengths and weaknesses",
             PromptType.FUTURE_RESEARCH: "Identify future research directions",
+            PromptType.CHAPTER_BREAKDOWN: "Create logical chapter breakdown with navigation markers",
+            PromptType.STUDY_GUIDE: "Generate comprehensive study guide with practice materials",
         }
 
 
