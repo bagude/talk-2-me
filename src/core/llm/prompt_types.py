@@ -16,3 +16,5 @@ class PromptType(Enum):
     FUTURE_RESEARCH = "future_research"
     QUICK_REVIEW = "quick_review"
     BIBLIOGRAPHY = "bibliography"
+    CHAPTER_BREAKDOWN = "chapter_breakdown"
+    STUDY_GUIDE = "study_guide"
