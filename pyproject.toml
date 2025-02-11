@@ -5,6 +5,7 @@ description = "A research paper analysis and interaction tool"
 authors = ["scpseng@gmail.com"]
 readme = "README.md"
 packages = [{include = "talk-2-me"}]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.9,!=3.9.7,<4.0"
@@ -26,6 +27,3 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.0.0"
-
-[tool.poetry]
-package-mode = false
