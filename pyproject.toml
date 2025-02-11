@@ -39,4 +39,16 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"] 
+packages = ["src"]
+
+[tool.poetry]
+name = "pdf-to-audio"
+version = "0.1.0"
+description = "A Streamlit application that converts PDFs to audio using LLM processing and TTS"
+authors = ["Your Name"]
+packages = [
+    { include = "src" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,!=3.9.7,<4.0" 
