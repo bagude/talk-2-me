@@ -4,15 +4,17 @@ Provides a clean API for the UI layer to interact with core functionality.
 """
 
 from pathlib import Path
-from typing import BinaryIO, Optional, Union
-
+from typing import BinaryIO, Optional, Union, Tuple
+import io
+import fitz  # PyMuPDF for PDF rendering
+import base64
 from loguru import logger
 
-from ..core.exceptions import PDFAudioError, ValidationError
-from ..core.pdf_processor import PDFProcessor
-from ..core.llm.prompts import prompts
-from ..core.llm.prompt_types import PromptType
-from ..core.llm.service import create_llm_service
+from src.core.exceptions import PDFAudioError, ValidationError
+from src.core.pdf_processor import PDFProcessor
+from src.core.llm.prompts import prompts
+from src.core.llm.prompt_types import PromptType
+from src.core.llm.service import create_llm_service
 
 
 class PDFService:
@@ -47,6 +49,8 @@ class PDFService:
         self.processor = PDFProcessor()
         self._current_file: Optional[BinaryIO] = None
         self._extracted_text: Optional[str] = None
+        self._pdf_document: Optional[fitz.Document] = None
+        self._total_pages: int = 0
 
         # Store templates with descriptions
         self.available_templates = prompts.list_templates()
@@ -76,6 +80,17 @@ class PDFService:
             PDFAudioError: If processing fails
         """
         try:
+            # Load PDF with PyMuPDF for rendering
+            if isinstance(file, (str, Path)):
+                self._pdf_document = fitz.open(file)
+            else:
+                # Convert BinaryIO to bytes for PyMuPDF
+                file_content = file.read()
+                self._pdf_document = fitz.open(
+                    stream=file_content, filetype="pdf")
+
+            self._total_pages = len(self._pdf_document)
+
             logger.info(
                 f"Processing PDF with {extraction_strategy} strategy and {template_type} template")
 
@@ -121,9 +136,59 @@ class PDFService:
         """
         return self._extracted_text
 
+    def get_page_image(self, page_number: int, zoom: float = 1.0) -> Tuple[str, Tuple[int, int]]:
+        """
+        Get a specific page as an image with the specified zoom level.
+
+        Args:
+            page_number: The page number (1-indexed)
+            zoom: Zoom level (default: 1.0)
+
+        Returns:
+            Tuple of (base64 encoded image, (width, height))
+        """
+        try:
+            if not self._pdf_document:
+                raise PDFAudioError("No PDF document loaded")
+
+            if page_number < 1 or page_number > self._total_pages:
+                raise ValueError(
+                    f"Page number {page_number} out of range (1-{self._total_pages})")
+
+            # Get the page (0-indexed internally)
+            page = self._pdf_document[page_number - 1]
+
+            # Calculate matrix for zoom
+            matrix = fitz.Matrix(zoom, zoom)
+
+            # Render page to image
+            pix = page.get_pixmap(matrix=matrix)
+
+            # Convert to PNG data
+            img_data = pix.tobytes("png")
+
+            # Convert to base64 for web display
+            img_b64 = base64.b64encode(img_data).decode()
+
+            return f"data:image/png;base64,{img_b64}", (pix.width, pix.height)
+
+        except Exception as e:
+            logger.error(f"Error rendering PDF page: {str(e)}")
+            raise PDFAudioError(f"Failed to render PDF page: {str(e)}")
+
+    def get_total_pages(self) -> int:
+        """Get the total number of pages in the loaded PDF."""
+        if not self._pdf_document:
+            raise PDFAudioError("No PDF document loaded")
+        return self._total_pages
+
     def clear(self) -> None:
         """Clear current processing state."""
         logger.debug("Clearing PDF service state")
+        if self._pdf_document:
+            self._pdf_document.close()
+        self._pdf_document = None
+        self._total_pages = 0
         self._current_file = None
         self._extracted_text = None
 
@@ -136,7 +201,8 @@ class PDFService:
         """Analyze extracted text using selected template."""
         try:
             template = prompts.get_template(template_type)
-            prompt = template.format(
+            # Format the prompt template with the text content
+            formatted_prompt = template.format(
                 content=text,
                 research_area=research_area or "general research"
             )
@@ -146,7 +212,7 @@ class PDFService:
                 "gemini", api_key=self.llm_api_key)
             result = llm_service.process_text(
                 text=text,
-                prompt_template=prompt
+                prompt_template=formatted_prompt
             )
 
             return result
