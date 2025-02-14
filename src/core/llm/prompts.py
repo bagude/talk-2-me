@@ -583,6 +583,7 @@ class PromptLibrary:
             PromptType.FUTURE_RESEARCH: "Identify future research directions",
             PromptType.CHAPTER_BREAKDOWN: "Create logical chapter breakdown with navigation markers",
             PromptType.STUDY_GUIDE: "Generate comprehensive study guide with practice materials",
+            PromptType.APA_CITATION: "Generate structured JSON format APA citations"
         }
 
 
