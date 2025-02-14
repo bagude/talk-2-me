@@ -24,6 +24,7 @@ class PromptType(Enum):
     BIBLIOGRAPHY = "bibliography"
     CHAPTER_BREAKDOWN = "chapter_breakdown"
     STUDY_GUIDE = "study_guide"
+    APA_CITATION = "apa_citation"
 
 
 @dataclass
@@ -517,6 +518,45 @@ class PromptLibrary:
                 description="Generates comprehensive study guide with practice materials",
                 parameters={"content": "The document to analyze"}
             ),
+
+            PromptType.APA_CITATION: PromptTemplate(
+                template="""
+                Generate an APA citation in structured JSON format for the given content.
+                The output should strictly follow this JSON schema:
+                {
+                  "annotatedBibliography": [
+                    {
+                      "author": "Last names and initials (e.g., 'Smith, J. D. & Doe, A. B.')",
+                      "year": "Publication year",
+                      "title": "Full title of the work",
+                      "publisher": "Publisher name or journal title",
+                      "doi_url": "DOI URL if available",
+                      "publication_type": "Type (e.g., journal article, book, etc.)",
+                      "volume": "Volume number if applicable",
+                      "issue": "Issue number if applicable",
+                      "pages": "Page range if applicable"
+                    }
+                  ]
+                }
+
+                Ensure:
+                - All author names are properly formatted with last name, first initial
+                - Multiple authors are connected with '&'
+                - Title is in sentence case
+                - All required fields are filled based on the source type
+                - JSON is properly formatted and valid
+                - Include DOI URL if available
+
+                - If any content is missing or not clear, return an empty JSON object
+
+                Content to cite:
+                {content}
+                """.strip(),
+                description="Generates structured JSON format APA citations",
+                parameters={
+                    "content": "The source content to create a citation for"
+                }
+            )
         }
 
     def get_template(self, prompt_type: PromptType) -> PromptTemplate:
