@@ -56,7 +56,7 @@ def initialize_session_state():
     if 'current_page' not in st.session_state:
         st.session_state.current_page = 1
     if 'zoom_level' not in st.session_state:
-        st.session_state.zoom_level = 2
+        st.session_state.zoom_level = 2.0
     if 'auto_scroll' not in st.session_state:
         st.session_state.auto_scroll = True
     # Add AI analysis state persistence
