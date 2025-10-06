@@ -88,6 +88,9 @@ class PDFService:
                 file_content = file.read()
                 self._pdf_document = fitz.open(
                     stream=file_content, filetype="pdf")
+                # Reset pointer so downstream processors can read the file
+                if hasattr(file, "seek"):
+                    file.seek(0)
 
             self._total_pages = len(self._pdf_document)
 
@@ -110,8 +113,7 @@ class PDFService:
 
                 self.processor = PDFProcessor(
                     extraction_strategy=extraction_strategy,
-                    llm_api_key=self.llm_api_key,
-                    prompt_template=prompt
+                    llm_api_key=self.llm_api_key
                 )
             else:
                 self.processor = PDFProcessor(
